@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input, ElementRef, Renderer2 } from '@angular/core';
 import { Chart, ChartType } from 'chart.js/auto';
 
 @Component({
@@ -9,8 +9,9 @@ import { Chart, ChartType } from 'chart.js/auto';
 export class LineChartComponent  implements OnInit {
 
   public chart!: Chart;
+  @Input() nameTab: string = "";
 
-  constructor() { }
+  constructor(private el: ElementRef, private renderer: Renderer2) { }
 
   ngOnInit() {
     console.log("ejecuta line-chart");
@@ -30,7 +31,25 @@ export class LineChartComponent  implements OnInit {
       }]
     };
 
-    this.chart = new Chart("lineChart", {
+    const div = this.renderer.createElement('div');
+    //establecer las propiedades del div como si fuesen los atrib en el archivo html
+    this.renderer.setStyle(div, 'width', '100%');
+    this.renderer.setStyle(div, 'height', '100%');
+    this.renderer.setStyle(div, 'margin', 'auto');
+    this.renderer.setStyle(div, 'text-align', 'center');
+    //indicar el atributo id en el div
+    this.renderer.setAttribute(div, 'id', 'container'+this.nameTab+'LineChart');
+
+    //crear el canvas
+    const canvas = this.renderer.createElement('canvas');
+    //añadir id al canvas
+    this.renderer.setAttribute(canvas, 'id', this.nameTab+'LineChart');
+    //añadir el canvas dentro del div
+    this.renderer.appendChild(div, canvas);
+    //añadir el div al elemento del componente, en este caso bar-chart.component.html
+    this.renderer.appendChild(this.el.nativeElement, div);
+
+    this.chart = new Chart(canvas, {
       type: 'line' as ChartType,
       data: data,
       options: { // opciones de la gráfica

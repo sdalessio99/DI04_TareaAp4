@@ -7,6 +7,8 @@ import { Component } from '@angular/core';
 })
 export class Tab1Page {
 
+  nombreTab: string = "tab1";
+
   constructor() {}
 
 }
