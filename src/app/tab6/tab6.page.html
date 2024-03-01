@@ -5,6 +5,8 @@
 </ion-header>
 
 <ion-content [fullscreen]="true">
+  <app-bar-chart *ngIf="tipoDeChartSeleccionado === 'bar-chart'" [tipoChartSelected]="tipoDeChartSeleccionado" [datosCategorias]="datos" [nombresCategorias]="categorias" [borderColorCategorias]="borderColorCat" [backgroundColorCategorias]="backgroundColorCat"></app-bar-chart>
+
   <ion-header collapse="condense">
     <ion-toolbar>
       <ion-title size="large">tab6</ion-title>

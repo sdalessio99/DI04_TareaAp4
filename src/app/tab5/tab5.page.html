@@ -1,10 +1,27 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-title>tab5</ion-title>
+    <ion-title>Graficos</ion-title>
+    <ion-segment [value]="tipoDeChartSeleccionado" (ionChange)="segmentChanged($event)">
+      <ion-segment-button value="bar-chart">
+        Bar Chart
+      </ion-segment-button>
+      <ion-segment-button value="line-chart">
+        Line Chart
+      </ion-segment-button>
+      <ion-segment-button value="pie-chart">
+        Pie Chart
+      </ion-segment-button>
+    </ion-segment>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
+  <app-bar-chart  *ngIf="tipoDeChartSeleccionado === 'bar-chart'"></app-bar-chart>
+  <!--En el segmento "Line-Chart" mostraremos únicamente su correspondiente gráfica-->
+  <app-line-chart *ngIf="tipoDeChartSeleccionado === 'line-chart'"></app-line-chart>
+  <!--En el segmento "Pie-Chart" mostraremos únicamente su correspondiente gráfica-->
+  <app-pie-chart *ngIf="tipoDeChartSeleccionado === 'pie-chart'"></app-pie-chart>
+
   <ion-header collapse="condense">
     <ion-toolbar>
       <ion-title size="large">tab5</ion-title>
