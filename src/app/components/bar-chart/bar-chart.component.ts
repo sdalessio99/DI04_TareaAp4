@@ -1,5 +1,6 @@
 import { Component, OnInit, Input, Renderer2, ElementRef } from '@angular/core';
 import { Chart, ChartType } from 'chart.js/auto';
+import { GestionApiService } from 'src/app/services/gestion-api.service'
 
 @Component({
   selector: 'app-bar-chart',
@@ -10,6 +11,7 @@ export class BarChartComponent  implements OnInit {
 
   @Input() datosCategorias: number[] = [];
   @Input() nombresCategorias: string[] = [];
+
   @Input() backgroundColorCategorias: string[] = [];
   @Input() borderColorCategorias: string[] = [];
   @Input() tipoChartSelected: string = "";
@@ -19,11 +21,19 @@ export class BarChartComponent  implements OnInit {
   //para que detecte la etiqueta de la tab
   @Input() nameTab: string = "";
 
-  constructor(private el:ElementRef, private renderer: Renderer2) { }
+  constructor(private el:ElementRef, private renderer: Renderer2, private gestionServiceApi: GestionApiService) { }
 
-  ngOnInit() {
+  ngOnInit(): void {
     console.log('ejecuta bar-chart');
     this.crearChart();
+
+    this.gestionServiceApi.datos$.subscribe((datos) => {
+      if (datos != undefined) {
+        this.nombresCategorias.push(datos.categoria);
+        this.datosCategorias.push(datos.totalResults);
+        this.chart.update();
+      }
+    });
   }
 
   private crearChart() {
@@ -100,29 +110,18 @@ export class BarChartComponent  implements OnInit {
     };
 
 
-    //crear el div
-    const div = this.renderer.createElement('div');
-    //establecer las propiedades del div como si fuesen los atrib en el archivo html
-    this.renderer.setStyle(div, 'width', '100%');
-    this.renderer.setStyle(div, 'height', '100%');
-    this.renderer.setStyle(div, 'margin', 'auto');
-    this.renderer.setStyle(div, 'text-align', 'center');
-    //indicar el atributo id en el div
-    this.renderer.setAttribute(div, 'id', 'container'+this.nameTab+'BarChart');
-
-    //crear el canvas
+    // Creamos la gráfica
     const canvas = this.renderer.createElement('canvas');
-    //añadir id al canvas
-    this.renderer.setAttribute(canvas, 'id', this.nameTab+'BarChart');
-    //añadir el canvas dentro del div
-    this.renderer.appendChild(div, canvas);
-    //añadir el div al elemento del componente, en este caso bar-chart.component.html
-    this.renderer.appendChild(this.el.nativeElement, div);
+    this.renderer.setAttribute(canvas, 'id', 'barChart');
+
+    // Añadimos el canvas al div con id "chartContainer"
+    const container = this.el.nativeElement.querySelector('#contenedor-barchart');
+    this.renderer.appendChild(container, canvas);
 
     this.chart = new Chart(canvas, {
-      type: 'bar' as ChartType,
-      data: data,
-      options: {
+      type: 'bar' as ChartType, // tipo de la gráfica
+      data: data, // datos
+      options: { // opciones de la gráfica
         responsive: true,
         maintainAspectRatio: false,
         scales: {
@@ -138,9 +137,9 @@ export class BarChartComponent  implements OnInit {
                 size: 16,
                 weight: 'bold'
               }
-            }
+            },
           }
-        }
+        },
       }
     });
     this.chart.canvas.width = 100;
